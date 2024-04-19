@@ -1,0 +1,93 @@
+version: '3'
+
+silent: true
+
+tasks:
+  install:asdf: |
+    asdf plugin add golang
+    asdf plugin add ruby
+    asdf install
+  install:jekyll:
+    dir: docs
+    cmd: bundle install
+  install:godoc: |
+    go install golang.org/x/tools/cmd/godoc@latest
+  install:
+    deps:
+      - 'install:asdf'
+      - 'install:jekyll'
+      - 'install:godoc'
+
+  run:metabase:
+    env:
+      HEALTH_LIMIT: 180
+    cmd: |
+      docker compose up -d
+      services=($(docker ps --filter "name=mb-" --format json | jq -r .Names))
+      for i in $(seq 1 "$HEALTH_LIMIT"); do
+        echo "Test ${i}/${HEALTH_LIMIT}"
+          all_healthy=true
+          for service in "${services[@]}"; do
+            health=$(docker inspect --format='json' "$service" | jq -r '.[0].State.Health.Status')
+            echo "  $service = $health"
+            if [ "${health}" != "healthy" ]; then
+              all_healthy=false
+            fi
+          done
+
+          if [ "$all_healthy" = true ]; then
+            echo "Services (${services[@]}) healthy after $i seconds"
+            exit 0
+          fi
+          sleep 1
+        done
+      	echo "Services (${services[@]}) did not become healthy after $HEALTH_LIMIT seconds"
+      	docker compose logs > container_logs.log
+        docker compose down
+      	exit 1
+  stop:metabase: docker compose down
+  setup:metabase: |
+    host=${METABASE_HOST:-http://localhost:3000}
+    username=${METABASE_USERNAME:-example@example.com}
+    password=${METABASE_PASSWORD:-password}
+      
+    echo "Fetching the setup token from $host"
+    setupToken=$(curl -s --fail "${host}/api/session/properties" | jq -er '."setup-token"')
+    if [ $? -ne 0 ]; then
+      echo "Failed to extract setup token"
+      exit $?
+    fi
+    
+    request=$(jq -n "{
+      database: null,
+      invite: null,
+      prefs: {
+        allow_tracking: false,
+        site_locale: \"en\",
+        site_name: \"Example\"
+      },
+      user: {
+        email: \"${username}\",
+        first_name: \"Example\",
+        last_name: \"User\",
+        password: \"${password}\",
+        password_confirm: \"${password}\",
+        site_name: \"Example\"
+      },
+      token: \"${setupToken}\"
+    }")
+    echo "Sending request to setup metabase"
+    curl -s --fail \
+    -X POST \
+    -H "Content-Type: application/json" \
+    -d "${request}" \
+    "${host}/api/setup"
+
+  run:docs:
+    dir: docs
+    cmd: bundle exec jekyll serve --incremental
+
+  run:godoc:
+    cmd: godoc -http=:8080
+
+  test: go test -v ./...
