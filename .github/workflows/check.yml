@@ -1,0 +1,54 @@
+name: Check
+
+on:
+  pull_request:
+    branches: [ main ]
+  push:
+    branches: [ main ]
+
+jobs:
+  test:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+    env:
+      METABASE_HOST: http://localhost:3000
+      METABASE_USERNAME: example@example.com
+      METABASE_PASSWORD: password
+    steps:
+      - name: Install Task
+        uses: arduino/setup-task@v1
+        with:
+          version: 3.x
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - shell: bash
+        name: Start Metabase
+        run: task run:metabase
+      - shell: bash
+        name: Set up Metabase
+        run: task setup:metabase
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: 'go.mod'
+          cache: true
+      - run: go mod download
+      - shell: bash
+        run: |
+          go test ./... \
+            -coverprofile=tests/coverage.out -json | tee tests/report.json
+
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: 'go.mod'
+          cache: true
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v4
+        with:
+          version: latest

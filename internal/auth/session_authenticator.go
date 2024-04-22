@@ -37,6 +37,10 @@ func (s *SessionAuthenticator) OnInit(host string, options *InitOptions) error {
 	}
 
 	request, err := http.NewRequest("POST", fmt.Sprintf("%s/api/session", host), bytes.NewBuffer(requestBody))
+	if err != nil {
+		return fmt.Errorf("error creating request: %w", err)
+	}
+
 	for k, v := range options.AdditionalHeaders {
 		request.Header.Set(k, v)
 	}
