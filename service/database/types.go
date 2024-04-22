@@ -31,8 +31,8 @@ type Database struct {
 	NativePermissions string             `json:"native_permissions"`
 	PointsOfInterest  *string            `json:"points_of_interest"`
 
-	CacheTTL          *string `json:"cache_ttl"`
-	InitialSyncStatus string  `json:"initial_sync_status"`
+	CacheTTL          *int64 `json:"cache_ttl"`
+	InitialSyncStatus string `json:"initial_sync_status"`
 }
 
 type Details map[string]interface{}
