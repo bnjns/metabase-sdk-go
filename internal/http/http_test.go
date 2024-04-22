@@ -14,23 +14,23 @@ func TestClient_Headers(t *testing.T) {
 
 	mux.HandleFunc("/api/session", func(w http.ResponseWriter, req *http.Request) {
 		w.WriteHeader(200)
-		w.Write([]byte(`{"id": "session-id"}`))
+		_, _ = w.Write([]byte(`{"id": "session-id"}`))
 	})
 	mux.HandleFunc("/api/test", func(w http.ResponseWriter, req *http.Request) {
 		if req.Header.Get("Authorizer") != "Bearer token" {
 			w.WriteHeader(500)
-			w.Write([]byte(`{}`))
+			_, _ = w.Write([]byte(`{}`))
 			return
 		}
 
 		if req.Header.Get("Content-Type") != "application/json" {
 			w.WriteHeader(500)
-			w.Write([]byte(`{}`))
+			_, _ = w.Write([]byte(`{}`))
 			return
 		}
 
 		w.WriteHeader(200)
-		w.Write([]byte(`{}`))
+		_, _ = w.Write([]byte(`{}`))
 	})
 
 	server := httptest.NewServer(mux)
