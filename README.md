@@ -63,6 +63,7 @@ See [the docs](#) for more details.
 - Go >= 1.22
 - Docker and Docker Compose
 - [Task](https://taskfile.dev/installation/)
+- [golangci-lint](https://golangci-lint.run/welcome/install/)
 
 If you wish to update the documentation, you will also need:
 
@@ -101,7 +102,13 @@ go test -v ./...
 or, using Task:
 
 ```sh
-task test
+task check:test
+```
+
+### Linting
+
+```sh
+task check:lint
 ```
 
 ## 📝 Additional Documentation

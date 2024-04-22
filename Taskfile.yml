@@ -90,4 +90,5 @@ tasks:
   run:godoc:
     cmd: godoc -http=:8080
 
-  test: go test -v ./...
+  check:test: go test -v ./...
+  check:lint: golangci-lint run
