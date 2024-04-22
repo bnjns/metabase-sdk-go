@@ -16,7 +16,8 @@ and share with others, as well as generate reports.
 
 This module provides an SDK to interact with the Metabase API for the Go programming language.
 
-> [!NOTE] This SDK is not officially maintained or endorsed by Metabase.
+> [!NOTE]
+> This SDK is not officially maintained or endorsed by Metabase.
 
 ## 🎈 Usage
 
