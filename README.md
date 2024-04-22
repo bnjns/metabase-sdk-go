@@ -55,7 +55,7 @@ This module provides an SDK to interact with the Metabase API for the Go program
     }
    ```
 
-See [the docs](#) for more details.
+See [the docs](https://bnjns.github.io/metabase-sdk-go/) for more details.
 
 ## 🔧 Contributing
 
