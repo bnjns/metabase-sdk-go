@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/bnjns/metabase-sdk-go/internal/http"
 	itesting "github.com/bnjns/metabase-sdk-go/internal/testing"
+	"github.com/bnjns/metabase-sdk-go/service/permissions"
 	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
 	"testing"
@@ -229,5 +230,42 @@ func TestUser_Reactivate(t *testing.T) {
 		err := service.Reactivate(ctx, 1000)
 
 		assert.ErrorIs(t, err, http.ErrNotFound)
+	})
+}
+
+func TestAddAutomaticGroups(t *testing.T) {
+	t.Run("users should always be added to the All Users group", func(t *testing.T) {
+		groupMemberships := addAutomaticGroups(nil, nil)
+
+		assert.Equal(t, 1, len(*groupMemberships))
+		assert.Contains(t, *groupMemberships, GroupMembership{Id: permissions.GroupAllUsers})
+	})
+
+	t.Run("users not marked as superuser should not be added to the Administrators group", func(t *testing.T) {
+		groupMemberships := addAutomaticGroups(nil, lo.ToPtr(false))
+
+		assert.Equal(t, 1, len(*groupMemberships))
+		assert.Contains(t, *groupMemberships, GroupMembership{Id: permissions.GroupAllUsers})
+	})
+
+	t.Run("users marked as superuser should be added to the Administrators group", func(t *testing.T) {
+		groupMemberships := addAutomaticGroups(nil, lo.ToPtr(true))
+		assert.Equal(t, 2, len(*groupMemberships))
+		assert.Contains(t, *groupMemberships, GroupMembership{Id: permissions.GroupAllUsers})
+		assert.Contains(t, *groupMemberships, GroupMembership{Id: permissions.GroupAdministrators})
+	})
+
+	t.Run("the automatic groups should not be duplicated", func(t *testing.T) {
+		groups := &[]GroupMembership{
+			{Id: 100},
+			{Id: permissions.GroupAllUsers},
+			{Id: permissions.GroupAdministrators},
+		}
+		groupMemberships := addAutomaticGroups(groups, lo.ToPtr(true))
+
+		assert.Equal(t, 3, len(*groupMemberships))
+		assert.Contains(t, *groupMemberships, GroupMembership{Id: permissions.GroupAllUsers})
+		assert.Contains(t, *groupMemberships, GroupMembership{Id: permissions.GroupAdministrators})
+		assert.Contains(t, *groupMemberships, GroupMembership{Id: 100})
 	})
 }
