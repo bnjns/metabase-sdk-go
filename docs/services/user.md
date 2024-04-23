@@ -4,7 +4,7 @@ title: User
 
 # User API
 
-[Metabase docs](https://www.metabase.com/docs/latest/api/user){: .btn .btn-purple }
+[Metabase docs](https://www.metabase.com/docs/latest/api/user){: .md-button }
 
 The request and response types can be imported from `github.com/bnjns/metabase-sdk-go/service/user`.
 
@@ -26,10 +26,11 @@ userId, err := client.User.Create(ctx, &user.CreateRequest{
 })
 ```
 
-{: .warning }
-When specifying the group memberships, you should not specify the `All Users` or `Administrators` groups (ID 1 and 2
-respectively); all users are automatically added to `All Users`, and you can add a user to `Administrators` by updating
-the user with `IsSuperuser` set to `true`.
+!!! warning
+
+    When specifying the group memberships, you should not specify the `All Users` or `Administrators` groups (ID 1 and
+    2 respectively); all users are automatically added to `All Users`, and you can add a user to `Administrators` by
+    updating the user with `IsSuperuser` set to `true`.
 
 ### Get a user
 
@@ -38,7 +39,7 @@ ctx := context.Background()
 currentUser, err := client.User.Get(ctx, 1)
 ```
 
-See `user.User` for the fields returned by the SDK.
+See [`user.User`](https://pkg.go.dev/github.com/bnjns/metabase-sdk-go/service/user#User) for the fields returned by the SDK.
 
 ### Get the current user
 
@@ -47,7 +48,7 @@ ctx := context.Background()
 currentUser, err := client.User.GetCurrentUser(ctx)
 ```
 
-See `user.User` for the fields returned by the SDK.
+See [`user.User`](https://pkg.go.dev/github.com/bnjns/metabase-sdk-go/service/user#User) for the fields returned by the SDK.
 
 ### Update a user
 
@@ -71,23 +72,25 @@ err := client.User.Update(ctx, 1, &user.UpdateRequest{
 })
 ```
 
-As this API uses a `PUT` operation, you may need to fetch the user before updating so that other properties are not
-lost:
+!!! tip
 
-```go
-isSuperuser := true
+    As this API uses a `PUT` operation, you may need to fetch the user before updating so that other properties are not
+    lost:
 
-usr, _ := client.User.Get(ctx, 1)
-err := client.User.Update(ctx, 1, &user.UpdateRequest{
-    Email:            &usr.Email,
-    FirstName:        usr.FirstName,
-    LastName:         usr.LastName,
-    Locale:           usr.Locale,
-    IsSuperuser:      &isSuperuser,
-    LoginAttributes:  usr.LoginAttributes,
-    GroupMemberships: &usr.GroupMemberships,
-})
-```
+    ```go
+    isSuperuser := true
+    
+    usr, _ := client.User.Get(ctx, 1)
+    err := client.User.Update(ctx, 1, &user.UpdateRequest{
+        Email:            &usr.Email,
+        FirstName:        usr.FirstName,
+        LastName:         usr.LastName,
+        Locale:           usr.Locale,
+        IsSuperuser:      &isSuperuser,
+        LoginAttributes:  usr.LoginAttributes,
+        GroupMemberships: &usr.GroupMemberships,
+    })
+    ```
 
 ### Disable a user
 

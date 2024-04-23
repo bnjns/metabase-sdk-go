@@ -7,15 +7,14 @@ tasks:
     asdf plugin add golang
     asdf plugin add ruby
     asdf install
-  install:jekyll:
-    dir: docs
-    cmd: bundle install
+  install:mkdocs: |
+    pip install mkdocs-material
   install:godoc: |
     go install golang.org/x/tools/cmd/godoc@latest
   install:
     deps:
       - 'install:asdf'
-      - 'install:jekyll'
+      - 'install:mkdocs'
       - 'install:godoc'
 
   run:metabase:
@@ -84,8 +83,7 @@ tasks:
     "${host}/api/setup"
 
   run:docs:
-    dir: docs
-    cmd: bundle exec jekyll serve --incremental
+    cmd: mkdocs serve
 
   run:godoc:
     cmd: godoc -http=:8080
