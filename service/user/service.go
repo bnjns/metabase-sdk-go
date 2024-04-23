@@ -28,7 +28,7 @@ func New(httpClient *http.Client) *Service {
 // GroupMemberships field.
 func (u *Service) Create(ctx context.Context, request *CreateRequest) (int64, error) {
 	modifiedRequest := *request
-	modifiedRequest.GroupMemberships = sanitiseGroupMemberships(modifiedRequest.GroupMemberships)
+	modifiedRequest.GroupMemberships = addAutomaticGroups(modifiedRequest.GroupMemberships, nil)
 
 	var resp User
 	err := u.httpClient.Post(ctx, "/user", &modifiedRequest, &resp)
@@ -100,7 +100,7 @@ func (u *Service) Get(ctx context.Context, id int64) (*User, error) {
 func (u *Service) Update(ctx context.Context, id int64, request *UpdateRequest) error {
 	modifiedRequest := *request
 	modifiedRequest.Id = id
-	modifiedRequest.GroupMemberships = sanitiseGroupMemberships(modifiedRequest.GroupMemberships)
+	modifiedRequest.GroupMemberships = addAutomaticGroups(modifiedRequest.GroupMemberships, modifiedRequest.IsSuperuser)
 
 	err := u.httpClient.Put(ctx, fmt.Sprintf("/user/%d", id), &modifiedRequest, nil)
 	if err != nil {
@@ -147,20 +147,24 @@ func (u *Service) Disable(ctx context.Context, id int64) error {
 	return nil
 }
 
-func sanitiseGroupMemberships(original *[]GroupMembership) *[]GroupMembership {
-	if original == nil {
-		return nil
+var automaticGroupIds = []int64{
+	permissions.GroupAllUsers,
+	permissions.GroupAdministrators,
+}
+
+func addAutomaticGroups(original *[]GroupMembership, isSuperuser *bool) *[]GroupMembership {
+	sanitised := []GroupMembership{
+		{Id: permissions.GroupAllUsers},
+	}
+	if isSuperuser != nil && *isSuperuser {
+		sanitised = append(sanitised, GroupMembership{Id: permissions.GroupAdministrators})
 	}
 
-	var sanitised []GroupMembership
-	var disallowedGroupIds = []int64{
-		permissions.GroupAllUsers,
-		permissions.GroupAdministrators,
-	}
-
-	for _, group := range *original {
-		if !slices.Contains(disallowedGroupIds, group.Id) {
-			sanitised = append(sanitised, group)
+	if original != nil {
+		for _, group := range *original {
+			if !slices.Contains(automaticGroupIds, group.Id) {
+				sanitised = append(sanitised, group)
+			}
 		}
 	}
 
