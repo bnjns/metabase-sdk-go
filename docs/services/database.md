@@ -4,7 +4,7 @@ title: Database
 
 # Database API
 
-[Metabase docs](https://www.metabase.com/docs/latest/api/database){: .btn .btn-purple }
+[Metabase docs](https://www.metabase.com/docs/latest/api/database){ .md-button }
 
 The request and response types can be imported from `github.com/bnjns/metabase-sdk-go/service/database`.
 
@@ -25,10 +25,11 @@ databaseId, err := client.Database.Create(ctx, &database.CreateRequest{
 })
 ```
 
-{: .warning }
-The attributes needed in `Details` depends on the database engine. Unfortunately, the Metabase documentation does not
-provide any details; the best way to identify the fields needed is to add the database in your browser and inspect the
-request made to the API.
+!!! warning
+
+    The attributes needed in `Details` depends on the database engine. Unfortunately, the Metabase documentation does
+    not provide any details; the best way to identify the fields needed is to add the database in your browser and
+    inspect the request made to the API.
 
 If your desired database engine isn't available within the SDK (`database.EngineXYZ`), you can simply cast it:
 
@@ -46,7 +47,8 @@ ctx := context.Background()
 db, err := client.Database.Get(ctx, 1)
 ```
 
-See `database.Database` for the fields returned by the SDK.
+See [`database.Database`](https://pkg.go.dev/github.com/bnjns/metabase-sdk-go/service/database#Database) for the fields
+returned by the SDK.
 
 ## Update a database
 
@@ -68,25 +70,27 @@ err := client.Database.Update(ctx, 1, &database.UpdateRequest{
 })
 ```
 
-As this API uses a `PUT` operation, you may need to fetch the database before updating so that other properties are not
-lost:
+!!! tip
 
-```go
-updatedName := "Updated database name"
+    As this API uses a `PUT` operation, you may need to fetch the database before updating so that other properties are
+    not lost:
 
-db, _ := client.Database.Get(ctx, 1)
-err := client.Database.Update(ctx, 1, &database.UpdateRequest{
-    Engine:           &db.Engine,
-    Name:             &updatedName,
-    Details:          db.Details,
-    Refingerprint:    &db.Refingerprint,
-    Schedules:        db.Schedules,
-    Caveats:          db.Caveats,
-    PointsOfInterest: db.PointsOfInterest,
-    AutoRunQueries:   &db.AutoRunQueries,
-    CacheTTL:         db.CacheTTL,
-})
-```
+    ```go
+    updatedName := "Updated database name"
+    
+    db, _ := client.Database.Get(ctx, 1)
+    err := client.Database.Update(ctx, 1, &database.UpdateRequest{
+        Engine:           &db.Engine,
+        Name:             &updatedName,
+        Details:          db.Details,
+        Refingerprint:    &db.Refingerprint,
+        Schedules:        db.Schedules,
+        Caveats:          db.Caveats,
+        PointsOfInterest: db.PointsOfInterest,
+        AutoRunQueries:   &db.AutoRunQueries,
+        CacheTTL:         db.CacheTTL,
+    })
+    ```
 
 ## Remove a database
 

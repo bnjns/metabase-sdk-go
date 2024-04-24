@@ -10,14 +10,14 @@ Metabase supports 2 authentication methods:
 - API keys (recommended)
 - Session-based, using a username and password
 
-{: .info }
-Most administrative actions require that the API key or user are a "super user".
+!!! tip
+
+    It's recommended that the API key or user are added to the `Administrators` user group so that the SDK is able to
+    perform all actions.
 
 ## Using an API key
-{: .d-inline-block }
 
-v0.49+
-{: .label .label-purple }
+!!! info "v0.49+"
 
 Follow Metabase's documentation to [create an API key](https://www.metabase.com/docs/latest/people-and-groups/api-keys),
 then use `NewApiKeyAuthenticator` to create the authenticator:

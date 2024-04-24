@@ -68,8 +68,8 @@ See [the docs](https://bnjns.github.io/metabase-sdk-go/) for more details.
 
 If you wish to update the documentation, you will also need:
 
-- Ruby 3.x
-- [Jekyll](https://jekyllrb.com/docs/installation/)
+- Python 3.12
+- [Material for Mkdocs](https://squidfunk.github.io/mkdocs-material/getting-started/#installation)
 
 ### Install
 

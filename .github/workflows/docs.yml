@@ -3,8 +3,10 @@ name: Docs
 on:
   push:
     branches: [ main ]
+    paths: [ 'docs/**', 'mkdocs.yml' ]
   pull_request:
     branches: [ main ]
+    paths: [ 'docs/**', 'mkdocs.yml' ]
 
 concurrency:
   group: 'pages'
@@ -16,24 +18,22 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Setup Ruby
-        uses: ruby/setup-ruby@v1
+      - uses: actions/setup-python@v5
         with:
-          working-directory: ./docs
-          ruby-version: '3.3'
-          bundler-cache: true
+          python-version: '3.12.3'
       - uses: actions/configure-pages@v5
         id: pages
-      - name: Build with Jekyll
-        run: bundle exec jekyll build --baseurl "${{ steps.pages.outputs.base_path }}"
-        working-directory: ./docs
+      - name: Install mkdocs
+        run: pip install mkdocs-material
+      - name: Build site
+        run: mkdocs build
         env:
-          JEKYLL_ENV: production
+          SITE_URL: ${{ steps.pages.outputs.base_url }}
       - if: github.ref == 'refs/heads/main'
         name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ./docs/_site
+          path: ./site
 
   deploy:
     if: github.ref == 'refs/heads/main'

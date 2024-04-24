@@ -8,15 +8,12 @@ nav_order: 1
 `metabase-sdk-go` is an SDK for the Go programming language for interacting with the Metabase REST API. Please note,
 this is not an official SDK or endorsed by Metabase.
 
-{: .warning }
-This SDK is still a work-in-progress and does not yet cover the full API.
+!!! warning
+    This SDK is still a work-in-progress and does not yet cover the full API.
 
 ## API compatibility
 
-<p style="display: flex; flex-direction: row">
-   <strong>Supported Metabase Version:</strong>
-   <span class="label" style="text-transform:none;">v0.49</span>
-</p>
+**Supported Metabase Version:** `v0.49`
 
 While Metabase is versioned, its API is not and is constantly evolving; as such the SDK may only work with specific
 versions of Metabase.
@@ -28,37 +25,37 @@ each version of the SDK will be designed to target a specific Metabase version.
 
 1. Add the SDK to your project using `go get`
 
-   ```sh
-   go get github.com:bnjns/metabase-sdk-go
-   ```
+    ```sh
+    go get github.com:bnjns/metabase-sdk-go
+    ```
 
 2. Create [an authenticator](authentication.md), to tell the client how to authenticate with the API
 
-   ```go
-    package main
-    
-    import "github.com/bnjns/metabase-sdk-go/metabase"
-    
-    func main()  { 
-        // Both session-based and API key-based authentication is supported
-        authenticator, err := metabase.NewApiKeyAuthenticator("<api key>")
-        if err != nil {
-            panic(err)
-        }
-    }
-   ```
+    ```go
+     package main
+     
+     import "github.com/bnjns/metabase-sdk-go/metabase"
+     
+     func main()  { 
+         // Both session-based and API key-based authentication is supported
+         authenticator, err := metabase.NewApiKeyAuthenticator("<api key>")
+         if err != nil {
+             panic(err)
+         }
+     }
+    ```
 
 3. Create the client
 
-   ```go
-    func main() {
-        // ...
-        client, err := metabase.NewClient("<host>", authenticator)
-        if err != nil {
-            panic(err)
-        }	
-    }
-   ```
+    ```go
+     func main() {
+         // ...
+         client, err := metabase.NewClient("<host>", authenticator)
+         if err != nil {
+             panic(err)
+         }	
+     }
+    ```
 
 ## Customising the client
 
@@ -118,9 +115,9 @@ client, err := metabase.NewClient("<host>", authenticator, metabase.WithHeaders(
 }))
 ```
 
-{: .warning }
-> You cannot use this to set any of the following headers:
->
-> - `Content-Type`
-> - `X-Api-Key`
-> - `X-Metabase-Session`
+!!! warning
+    You cannot use this to set any of the following headers:
+
+      - `Content-Type`
+      - `X-Api-Key`
+      - `X-Metabase-Session`
