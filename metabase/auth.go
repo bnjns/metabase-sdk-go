@@ -11,6 +11,8 @@ var (
 	errInvalidPassword = errors.New("invalid password provided")
 )
 
+type Authenticator = auth.Authenticator
+
 // NewApiKeyAuthenticator creates an authenticator that enables API key-based authentication using the provided API key.
 func NewApiKeyAuthenticator(apiKey string) (auth.Authenticator, error) {
 	if apiKey == "" {
