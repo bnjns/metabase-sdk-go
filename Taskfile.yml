@@ -5,7 +5,7 @@ silent: true
 tasks:
   install:asdf: |
     asdf plugin add golang
-    asdf plugin add ruby
+    asdf plugin add python
     asdf install
   install:mkdocs: |
     pip install mkdocs-material
