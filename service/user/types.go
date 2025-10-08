@@ -2,7 +2,8 @@ package user
 
 type SSOSource string
 
-type LoginAttributes map[string]string
+// LoginAttributes represents user login attributes where values can be either strings or booleans.
+type LoginAttributes map[string]interface{}
 
 // User represents the details of an existing user returned from the Metabase API.
 type User struct {
